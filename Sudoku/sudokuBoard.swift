@@ -237,12 +237,19 @@ class sudokuBoard: UIView {
     
     public func setValueAtHighlightedCell(value: Int) {
         
-        if gameReady && value <= Int(sudokuSize) {
+        if gameReady && value <= Int(sudokuSize) && mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1{
             values[mostRecentCellTap.0][mostRecentCellTap.1] = value
             self.reset()
             self.setNeedsDisplay()
         }
         else { print("setValueAtHighlightedCell: Game is not initialised yet (or you passed in a value larger than the sudoku game size (usually 9))") }
+    }
+    
+    public func clearSelectedCell() {
+        
+        if mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1 {
+            setValueAtHighlightedCell(value: 0)
+        }
     }
     
     public func reset() {
