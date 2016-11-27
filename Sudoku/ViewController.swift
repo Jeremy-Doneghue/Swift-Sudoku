@@ -9,10 +9,18 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var game: sudokuBoard!
+    @IBOutlet weak var keypad: numberPad!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let gsdb = GamestateDeliveryBoy()
+        game.setGameStateDeliveryBoy(boy: gsdb!)
+        keypad.setGameStateDeliveryBoy(boy: gsdb!)
+        
     }
 
     override func didReceiveMemoryWarning() {
