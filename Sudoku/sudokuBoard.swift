@@ -12,13 +12,18 @@ class sudokuBoard: UIView {
     
     // MARK: Properties
     
+    //GamestateDeliveryBoy -- An object used to pass information between the sudoku board and the input pad.
     var gsdb: GamestateDeliveryBoy = GamestateDeliveryBoy()!
     
+    /*
+     * Pass in the reference to the GamestateDeliveryBoy (gsdb)
+     */
     func setGameStateDeliveryBoy(boy: GamestateDeliveryBoy) {
         self.gsdb = boy
         self.gsdb.setSudokuBoardRef(sb: self)
     }
     
+    // A flag signifing whether or not the game is completely instantiated yet.
     var gameReady = false
     var isReady: Bool {
         get { return gameReady }
@@ -34,7 +39,13 @@ class sudokuBoard: UIView {
     let sampleGame: String = "604000023|207308610|008906700|040502130|900000500|500074290|102009360|069000070|430617900"
     //let sampleGame: String = "604000|207308|008906|040502|900000|500074|102009|069000|430617" //six x six matrix
     
+    // 2D Array of Integers storing the current state of the game.
     var values = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
+    
+    // 2D Array of Booleans storing which cells in values (above) are read only. true = read only cell.
+    var readOnlyCells = [[Bool]](repeating: [Bool](repeating: false, count: 9), count: 9)
+    
+    // 2D Array of Rectangles for drawing the sudoku grid.
     var innerRectangles = [[CGRect?]](repeating: [CGRect?](repeating: nil, count: 9), count: 9)
 
     var buttonWidth: CGFloat = 0
@@ -69,12 +80,16 @@ class sudokuBoard: UIView {
     
     // MARK: Drawing
     
+    /*
+     * Draw the view
+     */
     override func draw(_ rect: CGRect) {
         
         let ctx = UIGraphicsGetCurrentContext()
         ctx?.setStrokeColor(UIColor.black.cgColor)
         
         //Highlight cell
+        // TODO: only allow player to select non-original tiles
         if mostRecentCellTap != (-1, -1) {
             ctx?.setFillColor(UIColor.gray.cgColor)
             ctx?.fill(innerRectangles[mostRecentCellTap.x][mostRecentCellTap.y]!)
@@ -125,6 +140,10 @@ class sudokuBoard: UIView {
         }
     }
     
+    
+    /*
+     * Draw text into the specified rectangle with the specified font.
+     */
     func drawText(rect: CGRect, text: String, font: UIFont) {
         
         //set text color to white
@@ -149,6 +168,10 @@ class sudokuBoard: UIView {
     
     // MARK: Numbers
     
+    
+    /*
+     * Unused function. Puzzle generation algorithm will go here if that gets implemented.
+     */
     func seedNumbers() {
         
         for column in 0..<values.count {
@@ -160,7 +183,7 @@ class sudokuBoard: UIView {
     }
     
     /*
-     * Parse in values from a string in the format 82.4..12.| x 9 - where . = blank
+     * Parse in values from a string in the format 820400120| x 9 - where 0 = empty square
      */
     func parseGame(game: String) {
         
@@ -176,14 +199,19 @@ class sudokuBoard: UIView {
         }
         
         if valid {
-            print("valid")
+            print("Sudoku game is valid")
             
             for i in 0..<Int(sudokuSize) {
                 let rowChars = [Character](lines[i].characters)
                 
                 for j in 0..<Int(sudokuSize) {
+                    let toAdd = Int("\(rowChars[j])")!
+                    values[j][i] = toAdd
                     
-                    values[j][i] = Int("\(rowChars[j])")!
+                    // if the number to add in the cell in not blank (0), set that cell to read only so that it can't be overwritten by the player later.
+                    if toAdd != 0 {
+                        readOnlyCells[i][j] = true
+                    }
                 }
             }
         }
@@ -191,9 +219,14 @@ class sudokuBoard: UIView {
     
     // MARK: Interaction
     
+    
+    /*
+     * This function is called whenever the view is tapped.
+     * Identifies the cell that has been tapped, checks whether the cell is read only.
+     * Sets the value in the higlighted cell if the game is ready.
+     */
     func viewIsTapped(_ sender:UITapGestureRecognizer) {
         let location = sender.location(in: self)
-        //print("tap \(location)")
         
         var cellX: CGFloat = 0
         var cellY: CGFloat = 0
@@ -209,32 +242,29 @@ class sudokuBoard: UIView {
             yCellIndex += 1
         }
         
-        mostRecentCellTap = (x: xCellIndex - 1, y: yCellIndex - 1)
-        print("You tapped cell at: \(xCellIndex), \(yCellIndex)")
-        
-        // update GamestateDeliveryBoy
-        gsdb.setSudokuBoxSelected(state: true)
-        
-        print("numpad ready: \(gsdb.selectedStates().0) sudoku ready: \(gsdb.selectedStates().1)")
-        
-        if (gsdb.getReady()) {
-            setValueAtHighlightedCell(value: gsdb.getNumberToPass())
-            gsdb.reset()
-        }
-        
-        self.setNeedsDisplay()
-    }
-    
-    public func setValueInCell(cell: (Int, Int), value: Int) {
-        
-        if gameReady && value <= Int(sudokuSize){
-            values[cell.0][cell.1] = value
-            self.reset()
+        // Check whether the cell is read only before trying to select it
+        if readOnlyCells[yCellIndex - 1][xCellIndex - 1] == false {
+            mostRecentCellTap = (x: xCellIndex - 1, y: yCellIndex - 1)
+            
+            // Update GamestateDeliveryBoy
+            gsdb.setSudokuBoxSelected(state: true)
+            
+            print("numpad ready: \(gsdb.selectedStates().0) sudoku ready: \(gsdb.selectedStates().1)")
+            
+            if (gsdb.getReady()) {
+                setValueAtHighlightedCell(value: gsdb.getNumberToPass())
+                gsdb.reset()
+            }
             self.setNeedsDisplay()
         }
-        else { print("setValueInCell: Game is not initialised yet (or you passed in a value larger than the sudoku game size (usually 9))") }
+        
+        // Debug output
+        print("You tapped cell at: [\(xCellIndex), \(yCellIndex)]. Cell is \(readOnlyCells[yCellIndex - 1][xCellIndex - 1] ? "" : "not ")read only.")
     }
     
+    /*
+     * Set the value in the selected to the given value
+     */
     public func setValueAtHighlightedCell(value: Int) {
         
         if gameReady && value <= Int(sudokuSize) && mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1{
@@ -242,9 +272,11 @@ class sudokuBoard: UIView {
             self.reset()
             self.setNeedsDisplay()
         }
-        else { print("setValueAtHighlightedCell: Game is not initialised yet (or you passed in a value larger than the sudoku game size (usually 9))") }
     }
     
+    /*
+     * Set the value in the selected cell back to zero
+     */
     public func clearSelectedCell() {
         
         if mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1 {
@@ -252,7 +284,11 @@ class sudokuBoard: UIView {
         }
     }
     
+    /*
+     * Set the game back to a state where it can recieve the next interaction
+     */
     public func reset() {
+        
         self.mostRecentCellTap = (-1, -1)
         gsdb.setSudokuBoxSelected(state: false)
     }
