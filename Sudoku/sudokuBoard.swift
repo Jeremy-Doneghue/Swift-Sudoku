@@ -29,6 +29,7 @@ class sudokuBoard: UIView {
         get { return gameReady }
     }
     
+    // A flag signifing whether or not a square on the board has been selected.
     var buttonSelected = false
     var selected: Bool {
         get { return buttonSelected }
@@ -37,7 +38,6 @@ class sudokuBoard: UIView {
     let fontSize: CGFloat = 26
     
     let sampleGame: String = "604000023|207308610|008906700|040502130|900000500|500074290|102009360|069000070|430617900"
-    //let sampleGame: String = "604000|207308|008906|040502|900000|500074|102009|069000|430617" //six x six matrix
     
     // 2D Array of Integers storing the current state of the game.
     var values = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
@@ -89,7 +89,6 @@ class sudokuBoard: UIView {
         ctx?.setStrokeColor(UIColor.black.cgColor)
         
         //Highlight cell
-        // TODO: only allow player to select non-original tiles
         if mostRecentCellTap != (-1, -1) {
             ctx?.setFillColor(UIColor.gray.cgColor)
             ctx?.fill(innerRectangles[mostRecentCellTap.x][mostRecentCellTap.y]!)
@@ -132,22 +131,30 @@ class sudokuBoard: UIView {
         for column in 0..<values.count {
             for row in 0..<values.count {
                 
-                if values[column][row] != 0{
+                if values[column][row] != 0 {
                     numStr = String(values[column][row])
-                    drawText(rect: innerRectangles[column][row]!, text: numStr, font: UIFont.systemFont(ofSize: fontSize))
+                    
+                    if readOnlyCells[column][row] == true {
+                        drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.systemFont(ofSize: fontSize), color: UIColor.black)
+                    }
+                    else {
+                        drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.blue)
+                    }
                 }
             }
         }
+//        print(values)
+//        print(readOnlyCells)
     }
     
     
     /*
      * Draw text into the specified rectangle with the specified font.
      */
-    func drawText(rect: CGRect, text: String, font: UIFont) {
+    func drawText(rect: CGRect, text: String, font: UIFont, color: UIColor) {
         
         //set text color to white
-        let textColor: UIColor = UIColor.black
+        let textColor: UIColor = color
         
         // set the line spacing to 6
         let paraStyle = NSMutableParagraphStyle()
@@ -167,20 +174,6 @@ class sudokuBoard: UIView {
     }
     
     // MARK: Numbers
-    
-    
-    /*
-     * Unused function. Puzzle generation algorithm will go here if that gets implemented.
-     */
-    func seedNumbers() {
-        
-        for column in 0..<values.count {
-            for row in 0..<values.count {
-                values[column][row] = Int(arc4random_uniform(10))
-            }
-        }
-        //print(values)
-    }
     
     /*
      * Parse in values from a string in the format 820400120| x 9 - where 0 = empty square
@@ -206,7 +199,8 @@ class sudokuBoard: UIView {
                 
                 for j in 0..<Int(sudokuSize) {
                     let toAdd = Int("\(rowChars[j])")!
-                    values[j][i] = toAdd
+                    // TODO: WIP
+                    values[i][j] = toAdd
                     
                     // if the number to add in the cell in not blank (0), set that cell to read only so that it can't be overwritten by the player later.
                     if toAdd != 0 {
@@ -215,6 +209,8 @@ class sudokuBoard: UIView {
                 }
             }
         }
+        print(values)
+        print(readOnlyCells)
     }
     
     // MARK: Interaction
@@ -238,7 +234,7 @@ class sudokuBoard: UIView {
             xCellIndex += 1
         }
         while cellY < location.y {
-            cellY += buttonWidth
+            cellY += buttonHeight
             yCellIndex += 1
         }
         
@@ -259,7 +255,7 @@ class sudokuBoard: UIView {
         }
         
         // Debug output
-        print("You tapped cell at: [\(xCellIndex), \(yCellIndex)]. Cell is \(readOnlyCells[yCellIndex - 1][xCellIndex - 1] ? "" : "not ")read only.")
+        print("You tapped cell at: [\(yCellIndex), \(xCellIndex)]. Cell is \(readOnlyCells[yCellIndex - 1][xCellIndex - 1] ? "" : "not ")read only.\nIt has the value: \(values[yCellIndex - 1][xCellIndex - 1])")
     }
     
     /*
@@ -268,7 +264,8 @@ class sudokuBoard: UIView {
     public func setValueAtHighlightedCell(value: Int) {
         
         if gameReady && value <= Int(sudokuSize) && mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1{
-            values[mostRecentCellTap.0][mostRecentCellTap.1] = value
+            // TODO: Put the verification thing here
+            values[mostRecentCellTap.1][mostRecentCellTap.0] = value
             self.reset()
             self.setNeedsDisplay()
         }
@@ -292,4 +289,39 @@ class sudokuBoard: UIView {
         self.mostRecentCellTap = (-1, -1)
         gsdb.setSudokuBoxSelected(state: false)
     }
+    
+    // MARK: Verification
+    
+    func verifyMoveLegality(index: (Int, Int)) -> Bool {
+        
+        let number = values[index.0][index.1]
+        var valid = true
+        
+        //Check number isn't repeated in the row
+        for i in 0..<Int(sudokuSize) {
+            
+            if values[index.0][i] == number && i != index.1 {
+                valid = false
+                break
+            }
+        }
+        
+        print("Move is \(valid ? "" : "not ")valid")
+        return valid
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
