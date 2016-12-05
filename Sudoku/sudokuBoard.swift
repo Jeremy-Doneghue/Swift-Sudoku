@@ -138,7 +138,16 @@ class sudokuBoard: UIView {
                         drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.systemFont(ofSize: fontSize), color: UIColor.black)
                     }
                     else {
-                        drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.blue)
+                        // TODO: WIP
+                        // If the move is legal, draw the number in blue
+                        if verifyMoveLegality(index: (column, row)) {
+                            drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.blue)
+                        }
+                        // Else still draw the number, but put it in red.
+                        else {
+                            drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.red)
+                        }
+                        
                     }
                 }
             }
@@ -191,15 +200,13 @@ class sudokuBoard: UIView {
             }
         }
         
+        // Enter the numbers into the array
         if valid {
-            print("Sudoku game is valid")
-            
             for i in 0..<Int(sudokuSize) {
                 let rowChars = [Character](lines[i].characters)
                 
                 for j in 0..<Int(sudokuSize) {
                     let toAdd = Int("\(rowChars[j])")!
-                    // TODO: WIP
                     values[i][j] = toAdd
                     
                     // if the number to add in the cell in not blank (0), set that cell to read only so that it can't be overwritten by the player later.
@@ -209,8 +216,26 @@ class sudokuBoard: UIView {
                 }
             }
         }
-        print(values)
-        print(readOnlyCells)
+        
+//        TODO: fix this maybe, not really important
+//        for row in 0..<Int(sudokuSize) {
+//            for column in 0..<Int(sudokuSize) {
+//                if values[row][column] != 0 {
+//                    if verifyMoveLegality(index: (column, row)) {
+//                        valid = false
+//                        print("Invalid cell at \(row, column) with value \(values[row][column])")
+//                        break
+//                    }
+//                }
+//            }
+//        }
+        
+        if valid {
+            print("Sudoku game is valid")
+            print(values)
+            print(readOnlyCells)
+        }
+        else { print("Game is invalid, contains contraditions") }
     }
     
     // MARK: Interaction
@@ -241,6 +266,7 @@ class sudokuBoard: UIView {
         // Check whether the cell is read only before trying to select it
         if readOnlyCells[yCellIndex - 1][xCellIndex - 1] == false {
             mostRecentCellTap = (x: xCellIndex - 1, y: yCellIndex - 1)
+            print("Mostrecent celltap set: \(mostRecentCellTap)")
             
             // Update GamestateDeliveryBoy
             gsdb.setSudokuBoxSelected(state: true)
@@ -264,10 +290,9 @@ class sudokuBoard: UIView {
     public func setValueAtHighlightedCell(value: Int) {
         
         if gameReady && value <= Int(sudokuSize) && mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1{
-            // TODO: Put the verification thing here
             values[mostRecentCellTap.1][mostRecentCellTap.0] = value
-            self.reset()
             self.setNeedsDisplay()
+            self.reset()
         }
     }
     
@@ -297,16 +322,54 @@ class sudokuBoard: UIView {
         let number = values[index.0][index.1]
         var valid = true
         
-        //Check number isn't repeated in the row
+        // Check number isn't repeated in the row
         for i in 0..<Int(sudokuSize) {
-            
             if values[index.0][i] == number && i != index.1 {
                 valid = false
+                print("invalid: row")
                 break
             }
         }
         
-        print("Move is \(valid ? "" : "not ")valid")
+        // Some optimization: Only do this if an error has not yet been found
+        if valid {
+            // Check number isn't repeated in the column
+            for i in 0..<Int(sudokuSize) {
+                if values[i][index.1] == number && i != index.0 {
+                    valid = false
+                    print("invalid: column")
+                    break
+                }
+            }
+        }
+        
+        // Some optimization: Only do this if an error has not yet been found
+        if valid {
+            // Check the number isn't repeated in the local grid
+            
+            // Find which mini grid the selection is in
+            var localGridIdentifier = (-1, -1)
+            
+            if index.0 < 3 { localGridIdentifier.0 = 1 }
+            else if index.0 < 6 { localGridIdentifier.0 = 2 }
+            else if index.0 < 9 { localGridIdentifier.0 = 3 }
+            
+            if index.1 < 3 { localGridIdentifier.1 = 1 }
+            else if index.1 < 6 { localGridIdentifier.1 = 2 }
+            else if index.1 < 9 { localGridIdentifier.1 = 3 }
+            
+            for row in localGridIdentifier.0 * 3 - 3..<localGridIdentifier.0 * 3{
+                for column in localGridIdentifier.1 * 3 - 3..<localGridIdentifier.1 * 3{
+                    if values[row][column] == number && (row, column) != index {
+                        valid = false
+                        print("invalid: grid")
+                        break
+                    }
+                }
+            }
+        }
+        
+        print("Move is \(valid ? "" : "not ")valid - \(number) at \(index)")
         return valid
     }
     
