@@ -392,6 +392,10 @@ class sudokuBoard: UIView {
     
     // MARK: Solver
     
+    
+    /*
+     * Find the next move if the player is stuck
+     */
     func hint() {
         solve(numToSolve: 1)
     }
@@ -399,12 +403,15 @@ class sudokuBoard: UIView {
     func solve(numToSolve: Int) {
         
         // If the puzzle is already complete, save time and do nothing
-        if boxesFilled == 81 {
+        if boxesFilled >= 81 {
             return
         }
         
         // The number of boxes solved in this call of solve()
         var numSolved = 0
+        
+        // The initial number of boxes solved in the game
+        let initialSolved = boxesFilled
         
         //Make a new copy of the game array
         var newArray = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
@@ -414,10 +421,10 @@ class sudokuBoard: UIView {
             }
         }
         
-        let subgrids = [(1, 1), (1, 2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3)]
-        var boxesToTest = [(Int, Int)]()
-        var existingValuesInSubGrid = [Int]()
-        
+        let subgrids = [(1, 1), (1, 2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3)]  // Values to multiply to find the real indexes of points in subgrids
+        var boxesToTest = [(Int, Int)]()       // Array of indexes to empty boxes
+        var existingValuesInSubGrid = [Int]()  // Array of numbers that already are already set in a subgrid
+            
         for localGridIdentifier in subgrids {
             
             // Get the info about the local grid that we need
@@ -435,7 +442,6 @@ class sudokuBoard: UIView {
                     }
                 }
             }
-            
             
             // The index to the box to place the next value if one is found
             var validPlacementIndex: (Int, Int) = (-1, -1)
@@ -481,12 +487,8 @@ class sudokuBoard: UIView {
             existingValuesInSubGrid = [Int]()
         }
         
+        if boxesFilled < numToSolve {
+            solve(numToSolve: numToSolve - (numSolved - initialSolved))
+        }
     }
-    
-    
-    
-    
-    
-    
-    
 }
