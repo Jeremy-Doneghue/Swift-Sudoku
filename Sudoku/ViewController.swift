@@ -32,5 +32,9 @@ class ViewController: UIViewController {
     @IBAction func clearCellPressed(_ sender: UIButton) {
         game.clearSelectedCell()
     }
+
+    @IBAction func solveButtonPress(_ sender: Any) {
+        game.hint()
+    }
 }
 
