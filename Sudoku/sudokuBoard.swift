@@ -60,6 +60,10 @@ class sudokuBoard: UIView {
     
     var mostRecentCellTap: (x: Int, y: Int) = (-1, -1)
     
+    //var complete: Bool = false
+    var boxesFilled: Int = 0
+    
+    
     // MARK: Initialisation
     
     required init?(coder aDecoder: NSCoder) {
@@ -138,7 +142,6 @@ class sudokuBoard: UIView {
                         drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.systemFont(ofSize: fontSize), color: UIColor.black)
                     }
                     else {
-                        // TODO: WIP
                         // If the move is legal, draw the number in blue
                         if verifyMoveLegality(index: (column, row)) {
                             drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.blue)
@@ -147,13 +150,15 @@ class sudokuBoard: UIView {
                         else {
                             drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.red)
                         }
-                        
                     }
                 }
             }
         }
-//        print(values)
-//        print(readOnlyCells)
+        print("Boxes filled: \(boxesFilled)")
+        
+        if boxesFilled == 81 {
+            // TODO: Have a congratulations message!
+        }
     }
     
     
@@ -169,17 +174,23 @@ class sudokuBoard: UIView {
         let paraStyle = NSMutableParagraphStyle()
         paraStyle.alignment = NSTextAlignment.center
         
-        // set the Obliqueness to 0
-        let skew = 0
-        
         let attributes: NSDictionary = [
             NSForegroundColorAttributeName: textColor,
             NSParagraphStyleAttributeName: paraStyle,
-            NSObliquenessAttributeName: skew,
             NSFontAttributeName: font
         ]
         
-        text.draw(in: rect, withAttributes: (attributes as! [String : Any]))
+        let stringSize = text.size(attributes: (attributes as! [String : Any]))
+        let centeredRect = CGRect(
+            x: rect.origin.x + (rect.width - stringSize.width) / 2,
+            y: rect.origin.y + (rect.height - stringSize.height) / 2,
+            width: stringSize.width,
+            height: stringSize.height
+        )
+
+        
+        
+        text.draw(in: centeredRect, withAttributes: (attributes as! [String : Any]))
     }
     
     // MARK: Numbers
@@ -212,28 +223,17 @@ class sudokuBoard: UIView {
                     // if the number to add in the cell in not blank (0), set that cell to read only so that it can't be overwritten by the player later.
                     if toAdd != 0 {
                         readOnlyCells[i][j] = true
+                        boxesFilled += 1
                     }
                 }
             }
         }
         
-//        TODO: fix this maybe, not really important
-//        for row in 0..<Int(sudokuSize) {
-//            for column in 0..<Int(sudokuSize) {
-//                if values[row][column] != 0 {
-//                    if verifyMoveLegality(index: (column, row)) {
-//                        valid = false
-//                        print("Invalid cell at \(row, column) with value \(values[row][column])")
-//                        break
-//                    }
-//                }
-//            }
-//        }
-        
         if valid {
-            print("Sudoku game is valid")
-            print(values)
-            print(readOnlyCells)
+            //Deubug output
+            //print("Sudoku game is valid")
+            //print(values)
+            //print(readOnlyCells)
         }
         else { print("Game is invalid, contains contraditions") }
     }
@@ -291,6 +291,7 @@ class sudokuBoard: UIView {
         
         if gameReady && value <= Int(sudokuSize) && mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1{
             values[mostRecentCellTap.1][mostRecentCellTap.0] = value
+            boxesFilled += 1  // Increment global box filled counter
             self.setNeedsDisplay()
             self.reset()
         }
@@ -303,6 +304,10 @@ class sudokuBoard: UIView {
         
         if mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1 {
             setValueAtHighlightedCell(value: 0)
+            
+            // Decrement global box filled counter (kindof a hack, setValueAtHighlightedCell() increments the counter by 1, 
+            // even though we are technically removing a number. oh well this works.
+            boxesFilled -= 2
         }
     }
     
@@ -317,16 +322,27 @@ class sudokuBoard: UIView {
     
     // MARK: Verification
     
+    /*
+     * Verify the legality of a number inserted at a particular index
+     */
     func verifyMoveLegality(index: (Int, Int)) -> Bool {
         
-        let number = values[index.0][index.1]
+        return verifyMoveLegality(index: index, array: values)
+    }
+    
+    /*
+     * Verify the legality of a number inserted at a particular index
+     * Overload where the you can specify the array (used in the solver function)
+     */
+    func verifyMoveLegality(index: (Int, Int), array: [[Int]]) -> Bool {
+        
+        let number = array[index.0][index.1]
         var valid = true
         
         // Check number isn't repeated in the row
         for i in 0..<Int(sudokuSize) {
-            if values[index.0][i] == number && i != index.1 {
+            if array[index.0][i] == number && i != index.1 {
                 valid = false
-                print("invalid: row")
                 break
             }
         }
@@ -335,9 +351,8 @@ class sudokuBoard: UIView {
         if valid {
             // Check number isn't repeated in the column
             for i in 0..<Int(sudokuSize) {
-                if values[i][index.1] == number && i != index.0 {
+                if array[i][index.1] == number && i != index.0 {
                     valid = false
-                    print("invalid: column")
                     break
                 }
             }
@@ -360,26 +375,113 @@ class sudokuBoard: UIView {
             
             for row in localGridIdentifier.0 * 3 - 3..<localGridIdentifier.0 * 3{
                 for column in localGridIdentifier.1 * 3 - 3..<localGridIdentifier.1 * 3{
-                    if values[row][column] == number && (row, column) != index {
+                    if array[row][column] == number && (row, column) != index {
                         valid = false
-                        print("invalid: grid")
+                        //print("invalid: grid")
                         break
                     }
                 }
             }
         }
         
-        print("Move is \(valid ? "" : "not ")valid - \(number) at \(index)")
+        //print("Move is \(valid ? "" : "not ")valid - \(number) at \(index)")
         return valid
     }
     
     
     
+    // MARK: Solver
     
+    func hint() {
+        solve(numToSolve: 1)
+    }
     
-    
-    
-    
+    func solve(numToSolve: Int) {
+        
+        // If the puzzle is already complete, save time and do nothing
+        if boxesFilled == 81 {
+            return
+        }
+        
+        // The number of boxes solved in this call of solve()
+        var numSolved = 0
+        
+        //Make a new copy of the game array
+        var newArray = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
+        for row in 0..<values.count {
+            for column in 0..<values.count {
+                newArray[row][column] = values[row][column]
+            }
+        }
+        
+        let subgrids = [(1, 1), (1, 2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3)]
+        var boxesToTest = [(Int, Int)]()
+        var existingValuesInSubGrid = [Int]()
+        
+        for localGridIdentifier in subgrids {
+            
+            // Get the info about the local grid that we need
+            for row in localGridIdentifier.0 * 3 - 3..<localGridIdentifier.0 * 3 {
+                for column in localGridIdentifier.1 * 3 - 3..<localGridIdentifier.1 * 3 {
+                    //print(newArray[row][column])
+                    
+                    // Identify empty boxes in this subgrid
+                    if newArray[row][column] == 0 {
+                        boxesToTest.append((row, column))
+                    }
+                    else {
+                        // Add to the array of numbers already in the subgrid
+                        existingValuesInSubGrid.append(newArray[row][column])
+                    }
+                }
+            }
+            
+            
+            // The index to the box to place the next value if one is found
+            var validPlacementIndex: (Int, Int) = (-1, -1)
+            
+            // The number of valid placements in the subgrid for a number between 1 and 9 (inclusive), if this is 1, then that is the correct value for the box.
+            var numValidPlacements = 0
+            
+            for i in 1...9 {                                                    // For each number
+                
+                if numSolved == numToSolve {
+                    break
+                }
+                
+                for box in boxesToTest {                                        // For each empty box in the subgrid
+                    if !existingValuesInSubGrid.contains(i) {                   // If i does not already exist in the subgrid
+                        newArray[box.0][box.1] = i                              // Place i in the box
+                        if verifyMoveLegality(index: box, array: newArray) {    // If number i in that box is a valid move, then...
+                            numValidPlacements += 1                             // Increment the number of valid placements for i in the subgrid
+                            validPlacementIndex = box                           // Keep a record of which box that was in
+                        }
+                        newArray[box.0][box.1] = 0
+                    }
+                }
+                
+                if numValidPlacements != 0 {
+                    //print("Num valid placements for \(i) in \(localGridIdentifier): \(numValidPlacements)")
+                    
+                    // If there is only 1 valid placement for i in the subgrid, it must be the solution for that box
+                    if numValidPlacements == 1 {
+                        newArray[validPlacementIndex.0][validPlacementIndex.1] = i //Update the solver's copy of game state and the main state
+                        values[validPlacementIndex.0][validPlacementIndex.1] = i
+                        numSolved += 1
+                        boxesFilled += 1            //Increment global counter for boxes filled
+                        self.setNeedsDisplay()      // Update the display with the new values
+                    }
+                }
+                
+                numValidPlacements = 0
+            }
+            
+            // Reset boxes to test and existing values
+            boxesToTest = [(Int, Int)]()
+            existingValuesInSubGrid = [Int]()
+        }
+        
+    }
     
     
     
