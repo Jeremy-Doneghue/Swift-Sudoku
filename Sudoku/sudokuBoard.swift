@@ -37,13 +37,21 @@ class sudokuBoard: UIView {
     
     let fontSize: CGFloat = 26
     
-    let sampleGame: String = "604000023|207308610|008906700|040502130|900000500|500074290|102009360|069000070|430617900"
+    //let sampleGame: String = "604000023|207308610|008906700|040502130|900000500|500074290|102009360|069000070|430617900" // easy 40
+    let sampleGame: String = "098325000|450700008|700410000|980000200|000900410|100050000|000002745|073009600|064070032" // moderate 33
+    //let sampleGame: String = "103092000|205700190|000003000|900000040|030027000|000050207|000280050|000000030|040000976" // hard 26
+    //let sampleGame: String = "000000064|000000000|050008000|020070890|000010000|380469002|006930000|000006500|010000200"  // Very hard 22
+    //let sampleGame: String = "900000500|230000000|000800306|000500000|046900008|000000034|000024000|002003000|009000001"  // Very hard 20
+    //let sampleGame: String = "020000030|000007000|600004000|000402800|093000000|005000060|000900357|700000400|000030000"  // Very hard 19
+    //let sampleGame: String = "306000000|009000010|000700004|040000000|800500000|000000930|000039008|060000007|000010000" // extreme 17
     
     // 2D Array of Integers storing the current state of the game.
     var values = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
     
     // 2D Array of Booleans storing which cells in values (above) are read only. true = read only cell.
     var readOnlyCells = [[Bool]](repeating: [Bool](repeating: false, count: 9), count: 9)
+    
+    var solvedValues = [[Int]]()
     
     // 2D Array of Rectangles for drawing the sudoku grid.
     var innerRectangles = [[CGRect?]](repeating: [CGRect?](repeating: nil, count: 9), count: 9)
@@ -422,7 +430,7 @@ class sudokuBoard: UIView {
         }
         
         let subgrids = [(1, 1), (1, 2), (1,3), (2,1), (2,2), (2,3), (3,1), (3,2), (3,3)]  // Values to multiply to find the real indexes of points in subgrids
-        var boxesToTest = [(Int, Int)]()       // Array of indexes to empty boxes
+        var boxesToTest = [(Int, Int)]()       // Array of indexes to empty boxes in the subgrid
         var existingValuesInSubGrid = [Int]()  // Array of numbers that already are already set in a subgrid
             
         for localGridIdentifier in subgrids {
@@ -451,7 +459,7 @@ class sudokuBoard: UIView {
             
             for i in 1...9 {                                                    // For each number
                 
-                if numSolved == numToSolve {
+                if numSolved == numToSolve {                                    // Break if we've solved the number of boxes we were asked to
                     break
                 }
                 
@@ -474,7 +482,7 @@ class sudokuBoard: UIView {
                         newArray[validPlacementIndex.0][validPlacementIndex.1] = i //Update the solver's copy of game state and the main state
                         values[validPlacementIndex.0][validPlacementIndex.1] = i
                         numSolved += 1
-                        boxesFilled += 1            //Increment global counter for boxes filled
+                        boxesFilled += 1            // Increment global counter for boxes filled
                         self.setNeedsDisplay()      // Update the display with the new values
                     }
                 }
@@ -487,8 +495,87 @@ class sudokuBoard: UIView {
             existingValuesInSubGrid = [Int]()
         }
         
+        if boxesFilled == initialSolved {
+            print("could not find next move, trying recursive backtracking algorithm")
+            solve()
+            return
+        }
+        
         if boxesFilled < numToSolve {
             solve(numToSolve: numToSolve - (numSolved - initialSolved))
         }
+    }
+    
+    // MARK: BACKTRACK SOLVE
+    
+    var tries = 0
+    
+    var backtrackArray = [[Int]]()
+    func solve() {
+        
+        //solve(numToSolve: 81)
+        
+        backtrackArray = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
+        for row in 0..<values.count {
+            for column in 0..<values.count {
+                backtrackArray[row][column] = values[row][column]
+            }
+        }
+        
+        if solveBacktrack(array: &backtrackArray) {
+            values = backtrackArray
+            print("recursive solve was a success")
+            print(tries)
+            self.setNeedsDisplay()
+        }
+        else {
+            print("could not find a solution in a reasonable amount of time")
+            print(tries)
+        }
+    }
+    
+    func solveBacktrack(array: inout [[Int]]) -> Bool {
+        
+        tries += 1
+        if tries > 500000 {
+            return false
+        }
+        
+        var pt = (0, 0)
+        if !FindUnassignedLocation(foundPoint: &pt) {
+            return true  //Success
+        }
+        
+        for i in 1...9 {
+            
+            array[pt.0][pt.1] = i
+            if verifyMoveLegality(index: pt, array: array) {
+                
+                if solveBacktrack(array: &array) {
+                    return true
+                }
+            
+                //Failure, revert
+                array[pt.0][pt.1] = 0
+            }
+            else {
+                array[pt.0][pt.1] = 0
+            }
+        }
+        return false
+    }
+    
+    func FindUnassignedLocation(foundPoint: inout (Int, Int)) -> Bool {
+        
+        for row in 0..<Int(sudokuSize) {
+            for col in 0..<Int(sudokuSize) {
+                if backtrackArray[row][col] == 0 {
+                    foundPoint.0 = row
+                    foundPoint.1 = col
+                    return true
+                }
+            }
+        }
+        return false
     }
 }

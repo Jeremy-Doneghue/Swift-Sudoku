@@ -34,7 +34,8 @@ class ViewController: UIViewController {
     }
 
     @IBAction func solveButtonPress(_ sender: Any) {
-        game.hint()
+        game.solve(numToSolve: 81)
+        
     }
 }
 
