@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina4_0" orientation="portrait">
+    <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -20,22 +20,22 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nuH-OU-1Lb" customClass="sudokuBoard" customModule="Sudoku" customModuleProvider="target">
-                                <rect key="frame" x="16" y="28" width="288" height="288"/>
+                                <rect key="frame" x="16" y="28" width="343" height="343"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="nuH-OU-1Lb" secondAttribute="height" multiplier="1:1" id="iZw-IU-tYZ"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rpe-NM-GVK" customClass="numberPad" customModule="Sudoku" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="362" width="320" height="206"/>
+                                <rect key="frame" x="0.0" y="417" width="375" height="250"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Pv-Ax-IIY">
-                                <rect key="frame" x="76" y="324" width="46" height="30"/>
+                                <rect key="frame" x="76" y="379" width="46" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="JhL-Zn-F27"/>
                                 </constraints>
@@ -45,7 +45,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wup-PQ-ZX9">
-                                <rect key="frame" x="168" y="324" width="76" height="30"/>
+                                <rect key="frame" x="223" y="379" width="76" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="76" id="TIv-zI-Hxm"/>
                                 </constraints>
