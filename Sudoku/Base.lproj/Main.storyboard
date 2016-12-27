@@ -34,25 +34,26 @@
                                 <rect key="frame" x="0.0" y="417" width="375" height="250"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wup-PQ-ZX9">
+                                <rect key="frame" x="250" y="379" width="125" height="30"/>
+                                <state key="normal" title="Clear cell"/>
+                                <connections>
+                                    <action selector="clearCellPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qnN-DP-bcc"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Pv-Ax-IIY">
-                                <rect key="frame" x="76" y="379" width="46" height="30"/>
+                                <rect key="frame" x="0.0" y="379" width="125" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="46" id="JhL-Zn-F27"/>
+                                    <constraint firstAttribute="width" constant="125" id="Pfz-wx-nXY"/>
                                 </constraints>
                                 <state key="normal" title="Hint"/>
                                 <connections>
                                     <action selector="solveButtonPress:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hg3-gK-eFc"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wup-PQ-ZX9">
-                                <rect key="frame" x="223" y="379" width="76" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="76" id="TIv-zI-Hxm"/>
-                                </constraints>
-                                <state key="normal" title="Clear cell"/>
-                                <connections>
-                                    <action selector="clearCellPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qnN-DP-bcc"/>
-                                </connections>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jz-Wa-d7k">
+                                <rect key="frame" x="125" y="379" width="125" height="30"/>
+                                <state key="normal" title="Menu"/>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -60,14 +61,18 @@
                             <constraint firstItem="nuH-OU-1Lb" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="656-Bd-ssC"/>
                             <constraint firstItem="nuH-OU-1Lb" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="6c9-df-V75"/>
                             <constraint firstAttribute="trailing" secondItem="rpe-NM-GVK" secondAttribute="trailing" id="C4s-Ni-v3d"/>
-                            <constraint firstItem="0Pv-Ax-IIY" firstAttribute="top" secondItem="nuH-OU-1Lb" secondAttribute="bottom" constant="8" symbolic="YES" id="EUF-dI-WpH"/>
-                            <constraint firstItem="0Pv-Ax-IIY" firstAttribute="baseline" secondItem="wup-PQ-ZX9" secondAttribute="baseline" id="Gix-X1-O2i"/>
+                            <constraint firstItem="7Jz-Wa-d7k" firstAttribute="leading" secondItem="0Pv-Ax-IIY" secondAttribute="trailing" id="CjV-PH-QCH"/>
+                            <constraint firstItem="0Pv-Ax-IIY" firstAttribute="leading" secondItem="rpe-NM-GVK" secondAttribute="leading" id="MbT-EQ-yaC"/>
                             <constraint firstItem="rpe-NM-GVK" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="O6R-mj-IiJ"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="rpe-NM-GVK" secondAttribute="bottom" id="QbJ-1V-Ugk"/>
                             <constraint firstItem="nuH-OU-1Lb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="ZPe-5l-PBv"/>
-                            <constraint firstItem="rpe-NM-GVK" firstAttribute="top" secondItem="0Pv-Ax-IIY" secondAttribute="bottom" constant="8" symbolic="YES" id="uUP-Lw-OF1"/>
-                            <constraint firstItem="0Pv-Ax-IIY" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="60" id="uZi-zR-nMd"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="wup-PQ-ZX9" secondAttribute="trailing" constant="60" id="w0h-lr-bQ8"/>
+                            <constraint firstItem="rpe-NM-GVK" firstAttribute="top" secondItem="0Pv-Ax-IIY" secondAttribute="bottom" constant="8" symbolic="YES" id="gpJ-BD-qX8"/>
+                            <constraint firstItem="0Pv-Ax-IIY" firstAttribute="baseline" secondItem="7Jz-Wa-d7k" secondAttribute="baseline" id="hMe-Q8-DQR"/>
+                            <constraint firstItem="wup-PQ-ZX9" firstAttribute="leading" secondItem="7Jz-Wa-d7k" secondAttribute="trailing" id="kEw-Tw-LB8"/>
+                            <constraint firstItem="7Jz-Wa-d7k" firstAttribute="baseline" secondItem="wup-PQ-ZX9" secondAttribute="baseline" id="lmD-4q-W8G"/>
+                            <constraint firstItem="0Pv-Ax-IIY" firstAttribute="top" secondItem="nuH-OU-1Lb" secondAttribute="bottom" constant="8" symbolic="YES" id="mTG-95-sQC"/>
+                            <constraint firstItem="7Jz-Wa-d7k" firstAttribute="centerX" secondItem="rpe-NM-GVK" secondAttribute="centerX" id="owD-7b-DF3"/>
+                            <constraint firstItem="wup-PQ-ZX9" firstAttribute="trailing" secondItem="rpe-NM-GVK" secondAttribute="trailing" id="rd6-vK-1YE"/>
                         </constraints>
                     </view>
                     <connections>
