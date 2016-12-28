@@ -20,12 +20,10 @@ class ViewController: UIViewController {
         let gsdb = GamestateDeliveryBoy()
         game.setGameStateDeliveryBoy(boy: gsdb!)
         keypad.setGameStateDeliveryBoy(boy: gsdb!)
-        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: Actions
@@ -35,7 +33,26 @@ class ViewController: UIViewController {
 
     @IBAction func solveButtonPress(_ sender: Any) {
         game.solve(numToSolve: 81)
-        
     }
+    
+    @IBAction func menuButtonPress(_ sender: Any) {
+        
+        let menu = UIAlertController(title: "Menu", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let action = UIAlertAction(title: "New game...", style: UIAlertActionStyle.default) { action in
+            print("New Game")
+        }
+        let settings = UIAlertAction(title: "Settings...", style: UIAlertActionStyle.default) { action in
+            self.performSegue(withIdentifier: "settings_segue", sender: nil)
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) { action in
+            print("Pressed")
+        }
+        menu.addAction(action)
+        menu.addAction(settings)
+        menu.addAction(cancel)
+        
+        self.present(menu, animated: true)
+    }
+    
 }
 
