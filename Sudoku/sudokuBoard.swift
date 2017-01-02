@@ -509,7 +509,7 @@ class sudokuBoard: UIView {
         }
     }
     
-    // MARK: BACKTRACK SOLVE
+    // MARK: Backtrack Solve
     
     var tries = 0
     
@@ -539,10 +539,10 @@ class sudokuBoard: UIView {
     
     func solveBacktrack(array: inout [[Int]]) -> Bool {
         
-//        tries += 1
-//        if tries > 500000 {
-//            return false
-//        }
+        tries += 1
+        if tries > 500000 {
+            return false
+        }
         
         var pt = (0, 0)
         if !FindUnassignedLocation(foundPoint: &pt) {
