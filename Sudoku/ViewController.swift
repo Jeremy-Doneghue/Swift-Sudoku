@@ -39,7 +39,7 @@ class ViewController: UIViewController {
         
         let menu = UIAlertController(title: "Menu", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
         let action = UIAlertAction(title: "New game...", style: UIAlertActionStyle.default) { action in
-            print("New Game")
+            self.game.resetGame()
         }
         let settings = UIAlertAction(title: "Settings...", style: UIAlertActionStyle.default) { action in
             self.performSegue(withIdentifier: "settings_segue", sender: nil)

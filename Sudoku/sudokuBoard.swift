@@ -322,6 +322,18 @@ class sudokuBoard: UIView {
         }
     }
     
+    public func resetGame() {
+        for c in 0..<Int(sudokuSize) {
+            for r in 0..<Int(sudokuSize) {
+                if readOnlyCells[c][r] != true {
+                    values[c][r] = 0;
+                    boxesFilled -= 1;
+                }
+            }
+        }
+        self.setNeedsDisplay()
+    }
+    
     /*
      * Set the game back to a state where it can recieve the next interaction
      */
