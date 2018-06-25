@@ -217,7 +217,7 @@ class sudokuBoard: UIView {
         //check each line contains the correct number of characters
         var valid = true
         for line in lines {
-            if line.characters.count != Int(sudokuSize) {
+            if line.count != Int(sudokuSize) {
                 valid = false
             }
         }
@@ -225,7 +225,7 @@ class sudokuBoard: UIView {
         // Enter the numbers into the array
         if valid {
             for i in 0..<Int(sudokuSize) {
-                let rowChars = [Character](lines[i].characters)
+                let rowChars = Array(lines[i])
                 
                 for j in 0..<Int(sudokuSize) {
                     let toAdd = Int("\(rowChars[j])")!

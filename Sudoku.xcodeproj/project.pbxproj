@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		3F0D2B9A1DE42C660025FDED /* numberPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0D2B991DE42C660025FDED /* numberPad.swift */; };
 		3F0D2B9B1DE42C660025FDED /* numberPad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0D2B991DE42C660025FDED /* numberPad.swift */; };
+		3F1AF38920D90FDE00C81B37 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1AF38820D90FDE00C81B37 /* SettingsVC.swift */; };
+		3F203D9020E0FE7A00564C28 /* timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F203D8F20E0FE7A00564C28 /* timer.swift */; };
 		3F3113B61DE8F50800392E87 /* gamestateDeliveryBoy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */; };
 		3F3113B71DE8F50800392E87 /* gamestateDeliveryBoy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */; };
 		3F82EDBA1E134FC500B5C532 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F82EDB91E134FC500B5C532 /* SettingsTableViewController.swift */; };
@@ -35,6 +37,8 @@
 
 /* Begin PBXFileReference section */
 		3F0D2B991DE42C660025FDED /* numberPad.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = numberPad.swift; sourceTree = "<group>"; };
+		3F1AF38820D90FDE00C81B37 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
+		3F203D8F20E0FE7A00564C28 /* timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timer.swift; sourceTree = "<group>"; };
 		3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = gamestateDeliveryBoy.swift; sourceTree = "<group>"; };
 		3F82EDB91E134FC500B5C532 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		3FEDDB2F1DE247BF0019C0D5 /* Sudoku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sudoku.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,6 +105,8 @@
 				3F0D2B991DE42C660025FDED /* numberPad.swift */,
 				3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */,
 				3F82EDB91E134FC500B5C532 /* SettingsTableViewController.swift */,
+				3F1AF38820D90FDE00C81B37 /* SettingsVC.swift */,
+				3F203D8F20E0FE7A00564C28 /* timer.swift */,
 			);
 			path = Sudoku;
 			sourceTree = "<group>";
@@ -159,7 +165,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Jeremy Doneghue";
 				TargetAttributes = {
 					3FEDDB2E1DE247BF0019C0D5 = {
@@ -224,6 +230,8 @@
 				3FEDDB351DE247BF0019C0D5 /* ViewController.swift in Sources */,
 				3FEDDB3B1DE247BF0019C0D5 /* Sudoku.xcdatamodeld in Sources */,
 				3FEDDB331DE247BF0019C0D5 /* AppDelegate.swift in Sources */,
+				3F1AF38920D90FDE00C81B37 /* SettingsVC.swift in Sources */,
+				3F203D9020E0FE7A00564C28 /* timer.swift in Sources */,
 				3FEDDB561DE247D60019C0D5 /* sudokuBoard.swift in Sources */,
 				3F82EDBA1E134FC500B5C532 /* SettingsTableViewController.swift in Sources */,
 			);
@@ -279,15 +287,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -330,15 +346,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
