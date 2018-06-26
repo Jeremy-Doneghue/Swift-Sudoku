@@ -17,6 +17,7 @@ class ToggleThemeGesture: UIGestureRecognizer {
     }
     
     var activationDirection: ActivationDirection = .down
+    var bothFingersTracked = false
     
     var touchOne : UITouch? = nil
     var touchOneInitialPoint : CGPoint = CGPoint.zero
@@ -27,33 +28,41 @@ class ToggleThemeGesture: UIGestureRecognizer {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
         
-        if touches.count != 2 {
-            self.state = .failed
-            print("Failed in step 1: touches: \(touches.count)")
-            return
-        }
-        
         let touchArray = touches.map({
             (value: UITouch) -> UITouch in
             return value
         })
-        if self.touchOne == nil && self.touchTwo == nil {
+        
+        if touchArray.count == 1 {
+            self.touchOne = touchArray[0]
+            self.touchOneInitialPoint = (self.touchOne?.location(in: self.view))!
+            self.bothFingersTracked = false
+        }
+        if touchArray.count == 2 {
             self.touchOne = touchArray[0]
             self.touchOneInitialPoint = (self.touchOne?.location(in: self.view))!
             self.touchTwo = touchArray[1]
             self.touchTwoInitialPoint = (self.touchTwo?.location(in: self.view))!
-        } else {
-            // Ignore all but the first touch.
-            for touch in touches {
-                if touch != self.touchOne || touch != self.touchTwo {
-                    self.ignore(touch, for: event)
-                }
-            }
+            self.bothFingersTracked = true
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesMoved(touches, with: event)
+        
+        if bothFingersTracked == false && touches.count == 2 && touchOne != nil {
+            var secondTouch = Set(touches)
+            if secondTouch.contains(touchOne!) {
+                secondTouch.remove(touchOne!)
+                
+                touchTwo = secondTouch.first
+                touchTwoInitialPoint = (self.touchTwo?.location(in: self.view))!
+                bothFingersTracked = true
+            }
+            else {
+                self.state = .failed
+            }
+        }
         
         if let t1 = self.touchOne, let t2 = self.touchTwo {
             if touches.contains(t1) && touches.contains(t2) {
