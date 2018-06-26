@@ -15,6 +15,12 @@ class sudokuBoard: UIView {
     //GamestateDeliveryBoy -- An object used to pass information between the sudoku board and the input pad.
     var gsdb: GamestateDeliveryBoy = GamestateDeliveryBoy()!
     
+    var theme = Themes.dark {
+        didSet {
+            self.backgroundColor = theme.backgroundColor
+        }
+    }
+    
     /*
      * Pass in the reference to the GamestateDeliveryBoy (gsdb)
      */
@@ -47,6 +53,7 @@ class sudokuBoard: UIView {
     //let sampleGame: String = "020000030|000007000|600004000|000402800|093000000|005000060|000900357|700000400|000030000"  // Very hard 19 - solved in 11s
     //let sampleGame: String = "306000000|009000010|000700004|040000000|800500000|000000930|000039008|060000007|000010000"  // extreme 17 - unknown time to solve
     //let sampleGame: String = "000700000|100000000|000430200|000000006|000509000|000000418|000081000|002000050|040000300" // 17
+    //let sampleGame: String = "007040283000570900021080050603090700908305400000700008700050030000167802160208500"  // 36 // Use with SudokuGameParser.parse
     
     // 2D Array of Integers storing the current state of the game.
     var values = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
@@ -88,8 +95,16 @@ class sudokuBoard: UIView {
         
         let gesture = UITapGestureRecognizer(target: self, action: #selector(sudokuBoard.viewIsTapped(_:)))
         self.addGestureRecognizer(gesture)
+        self.backgroundColor = self.theme.backgroundColor
         
         parseGame(game: sampleGame)
+        // Try to parse the game description into the puzzle matrix
+//        do {
+//            values = try SudokuGameParser.parseGame(game: sampleGame, dimension: 9)
+//        } catch _ {
+//            return nil
+//        }
+        
         gameReady = true
     }
     
@@ -101,11 +116,11 @@ class sudokuBoard: UIView {
     override func draw(_ rect: CGRect) {
         
         let ctx = UIGraphicsGetCurrentContext()
-        ctx?.setStrokeColor(UIColor.black.cgColor)
+        ctx?.setStrokeColor(theme.lineColor.cgColor)
         
         //Highlight cell
         if mostRecentCellTap != (-1, -1) {
-            ctx?.setFillColor(UIColor.gray.cgColor)
+            ctx?.setFillColor(theme.cellHighlightColor.cgColor)
             ctx?.fill(innerRectangles[mostRecentCellTap.x][mostRecentCellTap.y]!)
         }
         
@@ -150,16 +165,16 @@ class sudokuBoard: UIView {
                     numStr = String(values[column][row])
                     
                     if readOnlyCells[column][row] == true {
-                        drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.systemFont(ofSize: fontSize), color: UIColor.black)
+                        drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.systemFont(ofSize: fontSize), color: theme.textColor)
                     }
                     else {
                         // If the move is legal, draw the number in blue
                         if verifyMoveLegality(index: (column, row)) {
-                            drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.blue)
+                            drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: theme.validTextColor)
                         }
                         // Else still draw the number, but put it in red.
                         else {
-                            drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: UIColor.red)
+                            drawText(rect: innerRectangles[row][column]!, text: numStr, font: UIFont.init(name: "Noteworthy-Bold" , size: 17)!, color: theme.invalidTextColor)
                         }
                     }
                 }

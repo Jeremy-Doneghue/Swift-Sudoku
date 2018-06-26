@@ -11,11 +11,11 @@ import Foundation
 
 class TimerView: UIView {
     
-//    var theme = Themes.light {
-//        didSet {
-//            timerText.textColor = theme.textColor
-//        }
-//    }
+    var theme = Themes.light {
+        didSet {
+            timerText.textColor = theme.textColor
+        }
+    }
     
     var timerText = UILabel()
     var seconds = 0

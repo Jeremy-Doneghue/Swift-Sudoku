@@ -30,6 +30,12 @@ class numberPad: UIView {
         get { return buttonSelected }
     }
     
+    var theme = Themes.light {
+        didSet {
+            self.backgroundColor = theme.backgroundColor
+        }
+    }
+    
     func setGameStateDeliveryBoy(boy: GamestateDeliveryBoy) {
         self.gsdb = boy
         self.gsdb.setNumberPad(np: self)
@@ -83,6 +89,8 @@ class numberPad: UIView {
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(sudokuBoard.viewIsTapped(_:)))
         self.addGestureRecognizer(tap)
+        
+        self.backgroundColor = theme.backgroundColor
     }
     
     // MARK: Drawing
@@ -93,7 +101,7 @@ class numberPad: UIView {
         ctx?.setLineWidth(lineWidth)
         
         if mostRecentNumpadButtonPressed != -1 {
-            ctx?.setFillColor(UIColor.gray.cgColor)
+            ctx?.setFillColor(theme.cellHighlightColor.cgColor)
             ctx?.fill(numpadButtonBoxes[mostRecentNumpadButtonPressed - 1])
         }
         
@@ -117,7 +125,7 @@ class numberPad: UIView {
     func drawText (rect: CGRect, text: String, font: UIFont) {
         
         //set text color to black
-        let textColor: UIColor = UIColor.black
+        let textColor = theme.textColor
         
         let paraStyle = NSMutableParagraphStyle()
         paraStyle.alignment = NSTextAlignment.center

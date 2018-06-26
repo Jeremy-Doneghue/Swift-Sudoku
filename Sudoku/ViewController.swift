@@ -13,6 +13,15 @@ class ViewController: UIViewController {
     @IBOutlet weak var game: sudokuBoard!
     @IBOutlet weak var keypad: numberPad!
     let timer = TimerView(frame: CGRect(x: 16, y: 25, width: 100, height: 20))
+    
+    var theme = Themes.light {
+        didSet {
+            self.view.backgroundColor = theme.backgroundColor
+            game.theme = theme
+            timer.theme = theme
+            keypad.theme = theme
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,13 +29,43 @@ class ViewController: UIViewController {
         let gsdb = GamestateDeliveryBoy()
         game.setGameStateDeliveryBoy(boy: gsdb!)
         keypad.setGameStateDeliveryBoy(boy: gsdb!)
+        game.theme = self.theme
+        keypad.theme = self.theme
         
+        self.view.backgroundColor = self.theme.backgroundColor
+        
+        timer.theme = self.theme
         self.view.addSubview(timer)
         timer.start()
         
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(applicationWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        
+        let lightsOffGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOff(_:)))
+        lightsOffGesture.activationDirection = .down
+        game.addGestureRecognizer(lightsOffGesture)
+        
+        let lightsOnGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOn(_:)))
+        lightsOnGesture.activationDirection = .up
+        game.addGestureRecognizer(lightsOnGesture)
+    }
+    
+    @objc func lightsOff(_ sender:UITapGestureRecognizer) {
+        if sender.state == .recognized {
+            if self.theme != Themes.dark {
+                print("Nox")
+                self.theme = Themes.dark
+            }
+        }
+    }
+    @objc func lightsOn(_ sender:UITapGestureRecognizer) {
+        if sender.state == .recognized {
+            if self.theme != Themes.light {
+                print("Lumos!")
+                self.theme = Themes.light
+            }
+        }
     }
     
     @objc func appMovedToBackground() {
@@ -60,9 +99,9 @@ class ViewController: UIViewController {
             self.timer.reset()
         }
         let settings = UIAlertAction(title: "Settings...", style: UIAlertAction.Style.default) { action in
-            let settingsVC = SettingsVC()
-            settingsVC.previous = self
-            self.present(settingsVC, animated: true, completion: nil)
+            //let settingsVC = SettingsVC()
+            //settingsVC.previous = self
+            //self.present(settingsVC, animated: true, completion: nil)
         }
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
             print("Pressed")
@@ -79,6 +118,5 @@ class ViewController: UIViewController {
             print("going to settings")
         }
     }
-    
 }
 
