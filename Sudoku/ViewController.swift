@@ -14,7 +14,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var keypad: numberPad!
     let timer = TimerView(frame: CGRect(x: 16, y: 25, width: 100, height: 20))
     
-    var theme = Themes.light {
+    var lightsOnGesture: ToggleThemeGesture?
+    var lightsOffGesture: ToggleThemeGesture?
+    
+    var theme = Themes.dark {
         didSet {
             self.view.backgroundColor = theme.backgroundColor
             game.theme = theme
@@ -42,13 +45,13 @@ class ViewController: UIViewController {
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(applicationWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
-        let lightsOffGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOff(_:)))
-        lightsOffGesture.activationDirection = .down
-        game.addGestureRecognizer(lightsOffGesture)
+        self.lightsOffGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOff(_:)))
+        self.lightsOffGesture!.activationDirection = .down
+        game.addGestureRecognizer(self.lightsOffGesture!)
         
-        let lightsOnGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOn(_:)))
-        lightsOnGesture.activationDirection = .up
-        game.addGestureRecognizer(lightsOnGesture)
+        self.lightsOnGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOn(_:)))
+        self.lightsOnGesture!.activationDirection = .up
+        game.addGestureRecognizer(self.lightsOnGesture!)
     }
     
     @objc func lightsOff(_ sender:UITapGestureRecognizer) {
@@ -56,6 +59,8 @@ class ViewController: UIViewController {
             if self.theme != Themes.dark {
                 print("Nox")
                 self.theme = Themes.dark
+                lightsOffGesture?.isEnabled = false
+                lightsOnGesture?.isEnabled = true
             }
         }
     }
@@ -64,6 +69,8 @@ class ViewController: UIViewController {
             if self.theme != Themes.light {
                 print("Lumos!")
                 self.theme = Themes.light
+                lightsOffGesture?.isEnabled = true
+                lightsOnGesture?.isEnabled = false
             }
         }
     }
