@@ -163,7 +163,7 @@ class numberPad: UIView {
         return numpadButtonValues[yCellIndex - 1][xCellIndex - 1]
     }
     
-    func viewIsTapped(_ sender:UITapGestureRecognizer) {
+    @objc func viewIsTapped(_ sender:UITapGestureRecognizer) {
         let location = sender.location(in: self)
         
         mostRecentNumpadButtonPressed = getButtonCellIndex(location: location)
