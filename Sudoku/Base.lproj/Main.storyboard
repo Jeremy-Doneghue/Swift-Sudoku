@@ -31,6 +31,7 @@
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wup-PQ-ZX9">
                                 <rect key="frame" x="250" y="403" width="125" height="30"/>
+                                <accessibility key="accessibilityConfiguration" label="Clear selected cell"/>
                                 <state key="normal" title="Clear cell"/>
                                 <connections>
                                     <action selector="clearCellPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="qnN-DP-bcc"/>
@@ -38,6 +39,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Pv-Ax-IIY">
                                 <rect key="frame" x="0.0" y="403" width="125" height="30"/>
+                                <accessibility key="accessibilityConfiguration" label="Puzzle hint"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="125" id="Oya-4v-qFE"/>
                                 </constraints>
@@ -48,6 +50,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7Jz-Wa-d7k">
                                 <rect key="frame" x="125" y="403" width="125" height="30"/>
+                                <accessibility key="accessibilityConfiguration" label="Menu"/>
                                 <state key="normal" title="Menu"/>
                                 <connections>
                                     <action selector="menuButtonPress:" destination="BYZ-38-t0r" eventType="touchUpInside" id="f3s-d7-Xiy"/>
