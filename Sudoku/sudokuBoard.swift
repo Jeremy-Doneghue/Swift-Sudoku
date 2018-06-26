@@ -186,12 +186,12 @@ class sudokuBoard: UIView {
         paraStyle.alignment = NSTextAlignment.center
         
         let attributes: NSDictionary = [
-            NSForegroundColorAttributeName: textColor,
-            NSParagraphStyleAttributeName: paraStyle,
-            NSFontAttributeName: font
+            convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): textColor,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.paragraphStyle): paraStyle,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.font): font
         ]
         
-        let stringSize = text.size(attributes: (attributes as! [String : Any]))
+        let stringSize = text.size(withAttributes: convertToOptionalNSAttributedStringKeyDictionary((attributes as! [String : Any])))
         let centeredRect = CGRect(
             x: rect.origin.x + (rect.width - stringSize.width) / 2,
             y: rect.origin.y + (rect.height - stringSize.height) / 2,
@@ -201,7 +201,7 @@ class sudokuBoard: UIView {
 
         
         
-        text.draw(in: centeredRect, withAttributes: (attributes as! [String : Any]))
+        text.draw(in: centeredRect, withAttributes: convertToOptionalNSAttributedStringKeyDictionary((attributes as! [String : Any])))
     }
     
     // MARK: Numbers
@@ -257,7 +257,7 @@ class sudokuBoard: UIView {
      * Identifies the cell that has been tapped, checks whether the cell is read only.
      * Sets the value in the higlighted cell if the game is ready.
      */
-    func viewIsTapped(_ sender:UITapGestureRecognizer) {
+    @objc func viewIsTapped(_ sender:UITapGestureRecognizer) {
         let location = sender.location(in: self)
         
         var cellX: CGFloat = 0
@@ -301,8 +301,20 @@ class sudokuBoard: UIView {
     public func setValueAtHighlightedCell(value: Int) {
         
         if gameReady && value <= Int(sudokuSize) && mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1{
-            values[mostRecentCellTap.1][mostRecentCellTap.0] = value
-            boxesFilled += 1  // Increment global box filled counter
+            
+            let previousValue = values[mostRecentCellTap.1][mostRecentCellTap.0]
+            
+            values[mostRecentCellTap.1][mostRecentCellTap.0] = value // Update to new value
+            
+            // If we're setting a blank cell to a number, then a new box is filled
+            if previousValue == 0 && value != 0 {
+                boxesFilled += 1  // Increment global box filled counter
+            }
+            // If we're setting a previously filled box to empty, subtract from boxes filled
+            else if previousValue != 0 && value == 0 {
+                boxesFilled -= 1
+            }
+            
             self.setNeedsDisplay()
             self.reset()
         }
@@ -315,10 +327,6 @@ class sudokuBoard: UIView {
         
         if mostRecentCellTap.0 != -1 && mostRecentCellTap.1 != -1 {
             setValueAtHighlightedCell(value: 0)
-            
-            // Decrement global box filled counter (kindof a hack, setValueAtHighlightedCell() increments the counter by 1, 
-            // even though we are technically removing a number. oh well this works.
-            boxesFilled -= 2
         }
     }
     
@@ -593,4 +601,15 @@ class sudokuBoard: UIView {
         }
         return false
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }

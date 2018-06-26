@@ -17,7 +17,7 @@ class SettingsVC: UIViewController {
 
         print("yeah?")
         let b = UIButton(type: .system)
-        b.setTitle("Go back", for: .normal)
+        b.setTitle("Go back", for: UIControl.State.normal)
         self.view.addSubview(b)
         self.view.backgroundColor = UIColor.white
         // Do any additional setup after loading the view.
@@ -29,10 +29,10 @@ class SettingsVC: UIViewController {
         let heightConstraint = b.heightAnchor.constraint(equalToConstant: 100)
         view.addConstraints([horizontalConstraint, verticalConstraint, widthConstraint, heightConstraint])
         
-        b.addTarget(self, action: #selector(SettingsVC.buttonAction(_:)), for: .touchUpInside)
+        b.addTarget(self, action: #selector(SettingsVC.buttonAction(_:)), for: UIControl.Event.touchUpInside)
     }
     
-    func buttonAction(_ sender:UIButton!) {
+    @objc func buttonAction(_ sender:UIButton!) {
         self.present(previous, animated: false, completion: nil)
     }
 

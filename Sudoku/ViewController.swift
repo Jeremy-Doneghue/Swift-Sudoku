@@ -25,8 +25,8 @@ class ViewController: UIViewController {
         timer.start()
         
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: Notification.Name.UIApplicationWillResignActive, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(applicationWillEnterForeground), name: Notification.Name.UIApplicationWillEnterForeground, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(applicationWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     @objc func appMovedToBackground() {
@@ -54,17 +54,17 @@ class ViewController: UIViewController {
     
     @IBAction func menuButtonPress(_ sender: Any) {
         
-        let menu = UIAlertController(title: "Menu", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let action = UIAlertAction(title: "New game...", style: UIAlertActionStyle.default) { action in
+        let menu = UIAlertController(title: "Menu", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let action = UIAlertAction(title: "New game...", style: UIAlertAction.Style.default) { action in
             self.game.resetGame()
             self.timer.reset()
         }
-        let settings = UIAlertAction(title: "Settings...", style: UIAlertActionStyle.default) { action in
+        let settings = UIAlertAction(title: "Settings...", style: UIAlertAction.Style.default) { action in
             let settingsVC = SettingsVC()
             settingsVC.previous = self
             self.present(settingsVC, animated: true, completion: nil)
         }
-        let cancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel) { action in
+        let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
             print("Pressed")
         }
         menu.addAction(action)

@@ -126,13 +126,13 @@ class numberPad: UIView {
         let skew = 0
         
         let attributes: NSDictionary = [
-            NSForegroundColorAttributeName: textColor,
-            NSParagraphStyleAttributeName: paraStyle,
-            NSObliquenessAttributeName: skew,
-            NSFontAttributeName: font
+            convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): textColor,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.paragraphStyle): paraStyle,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.obliqueness): skew,
+            convertFromNSAttributedStringKey(NSAttributedString.Key.font): font
         ]
         
-        text.draw(in: rect, withAttributes: (attributes as! [String : Any]))
+        text.draw(in: rect, withAttributes: convertToOptionalNSAttributedStringKeyDictionary((attributes as! [String : Any])))
     }
     
     /*
@@ -194,4 +194,15 @@ class numberPad: UIView {
     }
  
 
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
 }
