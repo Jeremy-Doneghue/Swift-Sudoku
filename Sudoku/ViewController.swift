@@ -12,18 +12,39 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var game: sudokuBoard!
     @IBOutlet weak var keypad: numberPad!
+    
+    @IBOutlet weak var hintButton: UIButton!
+    @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var clearCellButton: UIButton!
+    
     let timer = TimerView(frame: CGRect(x: 16, y: 25, width: 100, height: 20))
     
     var lightsOnGesture: ToggleThemeGesture?
     var lightsOffGesture: ToggleThemeGesture?
     
-    var theme = Themes.dark {
+    var theme = Themes.black {
         didSet {
-            self.view.backgroundColor = theme.backgroundColor
-            game.theme = theme
-            timer.theme = theme
-            keypad.theme = theme
+            updateTheme(to: theme)
         }
+    }
+    
+    private func updateTheme(to theme: ThemeDescription) {
+        
+        // Subviews
+        game.theme = theme
+        timer.theme = theme
+        keypad.theme = theme
+        
+        // Buttons
+        hintButton.setTitleColor(theme.buttonColor, for: .normal)
+        menuButton.setTitleColor(theme.buttonColor, for: .normal)
+        clearCellButton.setTitleColor(theme.buttonColor, for: .normal)
+        
+        self.view.backgroundColor = theme.backgroundColor
+        
+        // Save the updated theme to userdefaults
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(theme.name, forKey: "theme")
     }
 
     override func viewDidLoad() {
@@ -32,19 +53,16 @@ class ViewController: UIViewController {
         let gsdb = GamestateDeliveryBoy()
         game.setGameStateDeliveryBoy(boy: gsdb!)
         keypad.setGameStateDeliveryBoy(boy: gsdb!)
-        game.theme = self.theme
-        keypad.theme = self.theme
-        
-        self.view.backgroundColor = self.theme.backgroundColor
-        
-        timer.theme = self.theme
+
         self.view.addSubview(timer)
         timer.start()
         
+        // Add observers for app going into background
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(applicationWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
+        // Add theme switch gestures
         self.lightsOffGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOff(_:)))
         self.lightsOffGesture!.activationDirection = .down
         game.addGestureRecognizer(self.lightsOffGesture!)
@@ -52,6 +70,18 @@ class ViewController: UIViewController {
         self.lightsOnGesture = ToggleThemeGesture(target: self, action: #selector(ViewController.lightsOn(_:)))
         self.lightsOnGesture!.activationDirection = .up
         game.addGestureRecognizer(self.lightsOnGesture!)
+        
+        // Load theme from userdefaults
+        let userDefaults = UserDefaults.standard
+        if let storedTheme = userDefaults.string(forKey: "theme") {
+            if let found = Themes.getThemeByName(name: storedTheme) {
+                self.theme = found
+            }
+        }
+        else {
+            userDefaults.set(Themes.light.name, forKey: "theme")
+            self.theme = Themes.light
+        }
     }
     
     @objc func lightsOff(_ sender:UITapGestureRecognizer) {

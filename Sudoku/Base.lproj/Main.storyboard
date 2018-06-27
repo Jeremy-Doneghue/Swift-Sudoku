@@ -78,8 +78,11 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="clearCellButton" destination="wup-PQ-ZX9" id="r1j-uB-aA3"/>
                         <outlet property="game" destination="nuH-OU-1Lb" id="4TJ-hd-8IM"/>
+                        <outlet property="hintButton" destination="0Pv-Ax-IIY" id="ztf-NZ-6cn"/>
                         <outlet property="keypad" destination="rpe-NM-GVK" id="QnL-c3-hHp"/>
+                        <outlet property="menuButton" destination="7Jz-Wa-d7k" id="PfP-rU-Ckf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
