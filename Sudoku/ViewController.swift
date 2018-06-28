@@ -136,9 +136,9 @@ class ViewController: UIViewController {
             self.timer.reset()
         }
         let settings = UIAlertAction(title: "Settings...", style: UIAlertAction.Style.default) { action in
-            //let settingsVC = SettingsVC()
-            //settingsVC.previous = self
-            //self.present(settingsVC, animated: true, completion: nil)
+            //let scannerVC = ScannerViewController()
+            //self.present(scannerVC, animated: true, completion: nil)
+            self.performSegue(withIdentifier: "ShowScannerSegue", sender: self)
         }
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
             print("Pressed")
@@ -151,9 +151,13 @@ class ViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "settings_segue" {
-            print("going to settings")
+        if segue.identifier == "ShowScannerSegue" {
+            print("going to scanner")
         }
+    }
+    
+    @IBAction func unwindFromScanner(segue: UIStoryboardSegue) {
+        
     }
 }
 

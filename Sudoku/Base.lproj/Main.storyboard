@@ -83,11 +83,51 @@
                         <outlet property="hintButton" destination="0Pv-Ax-IIY" id="ztf-NZ-6cn"/>
                         <outlet property="keypad" destination="rpe-NM-GVK" id="QnL-c3-hHp"/>
                         <outlet property="menuButton" destination="7Jz-Wa-d7k" id="PfP-rU-Ckf"/>
+                        <segue destination="qMU-PQ-zdo" kind="presentation" identifier="ShowScannerSegue" id="UX0-sQ-tng"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="116" y="122.78860569715144"/>
+        </scene>
+        <!--Settings View Controller-->
+        <scene sceneID="N8S-l6-VqG">
+            <objects>
+                <viewController id="qMU-PQ-zdo" customClass="SettingsViewController" customModule="Sudoku" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="3Hl-EX-J5k"/>
+                        <viewControllerLayoutGuide type="bottom" id="x72-YQ-z9S"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="S5e-Xg-Cnm">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Settings!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HET-jK-RN1">
+                                <rect key="frame" x="153" y="323" width="69" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dKm-4O-UKm">
+                                <rect key="frame" x="169" y="586" width="37" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Done"/>
+                                <connections>
+                                    <action selector="goBackButtonTapped:" destination="qMU-PQ-zdo" eventType="touchUpInside" id="6Gh-dR-uIs"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <connections>
+                        <segue destination="pgs-Fb-KRZ" kind="unwind" identifier="unwindToGame" unwindAction="unwindFromScannerWithSegue:" id="j5i-0y-UpC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CA8-l8-6rc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="pgs-Fb-KRZ" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="955" y="122"/>
         </scene>
     </scenes>
 </document>
