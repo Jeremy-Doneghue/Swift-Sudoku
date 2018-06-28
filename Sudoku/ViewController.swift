@@ -132,13 +132,13 @@ class ViewController: UIViewController {
         
         let menu = UIAlertController(title: "Menu", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         let action = UIAlertAction(title: "New game...", style: UIAlertAction.Style.default) { action in
-            self.game.resetGame()
-            self.timer.reset()
+//            self.game.resetGame()
+//            self.timer.reset()
+            self.prepareNewGame()
         }
         let settings = UIAlertAction(title: "Settings...", style: UIAlertAction.Style.default) { action in
-            //let scannerVC = ScannerViewController()
-            //self.present(scannerVC, animated: true, completion: nil)
-            self.performSegue(withIdentifier: "ShowScannerSegue", sender: self)
+            
+            self.performSegue(withIdentifier: "settingsSegue", sender: self)
         }
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
             print("Pressed")
@@ -150,14 +150,41 @@ class ViewController: UIViewController {
         self.present(menu, animated: true)
     }
     
+    private func prepareNewGame() {
+        
+        let menu = UIAlertController(title: "New Game", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let easy = UIAlertAction(title: "Easy", style: UIAlertAction.Style.default) { action in
+            print("Easy muthaf***n E")
+        }
+        let medium = UIAlertAction(title: "Medium", style: UIAlertAction.Style.default) { action in
+            print("Medium")
+        }
+        let hard = UIAlertAction(title: "Hard", style: UIAlertAction.Style.default) { action in
+            print("Hard")
+        }
+        let scan = UIAlertAction(title: "Scan from paper...", style: UIAlertAction.Style.default) { action in
+            print("Scan")
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
+            print("Cancelled")
+        }
+        menu.addAction(easy)
+        menu.addAction(medium)
+        menu.addAction(hard)
+        menu.addAction(scan)
+        menu.addAction(cancel)
+        
+        self.present(menu, animated: true)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "ShowScannerSegue" {
+        if segue.identifier == "settingsSegue" {
             print("going to scanner")
         }
     }
     
-    @IBAction func unwindFromScanner(segue: UIStoryboardSegue) {
-        
+    @IBAction func unwindFromSettings(segue: UIStoryboardSegue) {
+        print("Returned from settings. Does anything need to happen? Probably not.")
     }
 }
 
