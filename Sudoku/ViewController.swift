@@ -162,8 +162,12 @@ class ViewController: UIViewController {
         let hard = UIAlertAction(title: "Hard", style: UIAlertAction.Style.default) { action in
             print("Hard")
         }
-        let scan = UIAlertAction(title: "Scan from paper...", style: UIAlertAction.Style.default) { action in
-            print("Scan")
+        if #available(iOS 11, *) {
+            let scan = UIAlertAction(title: "Scan from paper...", style: UIAlertAction.Style.default) { action in
+                
+                self.performSegue(withIdentifier: "segueToScanner", sender: self)
+            }
+            menu.addAction(scan)
         }
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
             print("Cancelled")
@@ -171,7 +175,6 @@ class ViewController: UIViewController {
         menu.addAction(easy)
         menu.addAction(medium)
         menu.addAction(hard)
-        menu.addAction(scan)
         menu.addAction(cancel)
         
         self.present(menu, animated: true)
@@ -185,6 +188,10 @@ class ViewController: UIViewController {
     
     @IBAction func unwindFromSettings(segue: UIStoryboardSegue) {
         print("Returned from settings. Does anything need to happen? Probably not.")
+    }
+    
+    @IBAction func unwindFromScanner(segue: UIStoryboardSegue) {
+        print("Returned from scanner")
     }
 }
 

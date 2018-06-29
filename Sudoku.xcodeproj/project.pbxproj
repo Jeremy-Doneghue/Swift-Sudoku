@@ -14,6 +14,7 @@
 		3F203D9720E1D98900564C28 /* ToggleThemeGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F203D9620E1D98900564C28 /* ToggleThemeGesture.swift */; };
 		3F3113B61DE8F50800392E87 /* gamestateDeliveryBoy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */; };
 		3F3113B71DE8F50800392E87 /* gamestateDeliveryBoy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */; };
+		3F643AFC20E5F14B0096BED5 /* my_mnist.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 3F643AFB20E5F14B0096BED5 /* my_mnist.mlmodel */; };
 		3FA0B5F320E495490081A4FE /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA0B5F220E495490081A4FE /* SettingsViewController.swift */; };
 		3FA0B5F520E49E0C0081A4FE /* ScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA0B5F420E49E0C0081A4FE /* ScannerViewController.swift */; };
 		3FA0B5F720E4C85F0081A4FE /* CGImagePropertyOrientation+UIImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA0B5F620E4C85F0081A4FE /* CGImagePropertyOrientation+UIImageOrientation.swift */; };
@@ -44,6 +45,7 @@
 		3F203D9420E1CF3500564C28 /* ThemeDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ThemeDescription.swift; path = "../../../Paper Games/Paper Games/Helpers/ThemeDescription.swift"; sourceTree = "<group>"; };
 		3F203D9620E1D98900564C28 /* ToggleThemeGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleThemeGesture.swift; sourceTree = "<group>"; };
 		3F3113B51DE8F50800392E87 /* gamestateDeliveryBoy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = gamestateDeliveryBoy.swift; sourceTree = "<group>"; };
+		3F643AFB20E5F14B0096BED5 /* my_mnist.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = my_mnist.mlmodel; sourceTree = "<group>"; };
 		3FA0B5F220E495490081A4FE /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		3FA0B5F420E49E0C0081A4FE /* ScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewController.swift; sourceTree = "<group>"; };
 		3FA0B5F620E4C85F0081A4FE /* CGImagePropertyOrientation+UIImageOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGImagePropertyOrientation+UIImageOrientation.swift"; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 		3FA0B5EF20E486550081A4FE /* SudokuScanner */ = {
 			isa = PBXGroup;
 			children = (
+				3F643AFB20E5F14B0096BED5 /* my_mnist.mlmodel */,
 				3FA0B5F620E4C85F0081A4FE /* CGImagePropertyOrientation+UIImageOrientation.swift */,
 				3FA0B5F420E49E0C0081A4FE /* ScannerViewController.swift */,
 			);
@@ -258,6 +261,7 @@
 				3FA0B5F320E495490081A4FE /* SettingsViewController.swift in Sources */,
 				3FA0B5F720E4C85F0081A4FE /* CGImagePropertyOrientation+UIImageOrientation.swift in Sources */,
 				3F203D9720E1D98900564C28 /* ToggleThemeGesture.swift in Sources */,
+				3F643AFC20E5F14B0096BED5 /* my_mnist.mlmodel in Sources */,
 				3FEDDB3B1DE247BF0019C0D5 /* Sudoku.xcdatamodeld in Sources */,
 				3FEDDB331DE247BF0019C0D5 /* AppDelegate.swift in Sources */,
 				3F203D9520E1CF3500564C28 /* ThemeDescription.swift in Sources */,
