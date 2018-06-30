@@ -15,6 +15,8 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     
+    private let _MNISTSize: CGFloat = 28.0
+    
     /// - Tag: MLModelSetup
     lazy var classificationRequest: VNCoreMLRequest = {
         do {
@@ -80,7 +82,7 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
 
         if let ciImage = CIImage(image: image) {
             
-            let imageOrientation = CGImagePropertyOrientation(image.imageOrientation)
+            //let imageOrientation = CGImagePropertyOrientation(image.imageOrientation)
             let detectYaRect = CIDetector(ofType: CIDetectorTypeRectangle, context: ctx, options: nil)
             if let features = detectYaRect?.features(in: ciImage) {
                 
@@ -88,10 +90,16 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
                     
                     let rectangleFeature: CIRectangleFeature = features[0] as! CIRectangleFeature
                     
-                    guard let cropped = perspectiveCorrect(image: ciImage, rect: rectangleFeature) else { return }
-                    guard let inverted = invertImage(image: cropped) else { return }
-                    guard let monochrome = imageToBW(image: inverted) else { return }
-                    guard let contrastBoosted = contrastBoost(image: monochrome) else { return }
+                    guard let perspectiveCorrected = perspectiveCorrect(image: ciImage, rect: rectangleFeature)
+                        else { print("🔴 Perspective correction failed"); return }
+                    guard let squareCropped = cropToSquare(image: perspectiveCorrected)
+                        else { print("🔴 Cropping to square failed"); return }
+                    guard let inverted = invertImage(image: squareCropped)
+                        else { print("🔴 Image inversion failed"); return }
+                    guard let monochrome = imageToBW(image: inverted)
+                        else { print("🔴 Monochrome filter failed"); return }
+                    guard let contrastBoosted = contrastBoost(image: monochrome)
+                        else { print("🔴 Contrast boost failed"); return }
                     
                     imageView.image = UIImage(ciImage: contrastBoosted, scale: 1.0, orientation: .up)
                     
@@ -99,19 +107,22 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
                     var cells: [[CIImage?]] = Array(repeating: Array(repeating: nil, count: 9), count: 9)
                     let cellWidth = contrastBoosted.extent.width / 9.0
                     let cellHeight = contrastBoosted.extent.height / 9.0
-                    let cropInset = ((cellWidth + cellHeight) / 2.0) * 0.2 // 10% of the average of cell width and height
+                    let cropInset = ((cellWidth + cellHeight) / 2.0) * 0.35 // 10% of the average of cell width and height
+                    let croppedCellSize = cellWidth - cropInset
+                    let resizeScalar = findScalarToResize(from: croppedCellSize, to: _MNISTSize)
                     for col in 0..<9 {
                         for row in (0..<9).reversed() {
-                            cells[col][row] = contrastBoosted.cropped(to: CGRect(x: cellWidth * CGFloat(col) + cropInset,
+                            let cell = contrastBoosted.cropped(to: CGRect(x: cellWidth * CGFloat(col) + cropInset,
                                                                               y: cellHeight * CGFloat(row) + cropInset,
-                                                                              width: cellWidth - cropInset,
-                                                                              height: cellHeight - cropInset)).oriented(.right)
+                                                                              width: cellWidth - cropInset, // Width and height of the patch need to be equal for later on
+                                                                              height: cellWidth - cropInset)).oriented(.right) // Probably need to make this smarter
+                            cells[col][row] = resizeImage(image: cell, scalar: resizeScalar)
                         }
                     }
-                    print("abc")
+                    //print(cells[0][2]?.extent)
                     
                     for col in 0..<9 {
-                        print(classifyInstance(input: cells[0][col]!, orientation: .right))
+                        print(classifyInstance(input: cells[1][col]!, orientation: .right))
                     }
                 }
             }
@@ -137,7 +148,7 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
         
         let contrastBoost = CIFilter(name: "CIColorControls")
         contrastBoost?.setValue(image, forKey: "inputImage")
-        contrastBoost?.setValue(2.0, forKey: "inputContrast")
+        contrastBoost?.setValue(128.0, forKey: "inputContrast")
         contrastBoost?.setValue(0.0, forKey: "inputBrightness")
         return contrastBoost?.outputImage
     }
@@ -151,6 +162,38 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
         perspectiveCorrect?.setValue(CIVector(cgPoint: rect.topLeft), forKey: "inputTopLeft")
         perspectiveCorrect?.setValue(CIVector(cgPoint: rect.topRight), forKey: "inputTopRight")
         return perspectiveCorrect?.outputImage
+    }
+    
+    // Crops an image to a square of edge length of the shortest side of the input image
+    private func cropToSquare(image: CIImage) -> CIImage? {
+        
+        let width = image.extent.width
+        let height = image.extent.height
+        // If already square, just return identity
+        if width == height { return image }
+        print(image.extent)
+        
+        enum SideToCrop { case width; case height }
+        let longestSide: SideToCrop = (width < height) ? .height : .width
+        let cropSize = ((width < height) ? width : height).rounded(.down)
+        
+        let origin = CGPoint(x: ((longestSide == .width) ? (width - height) / 2 : 0).rounded(.down),
+                             y: ((longestSide == .height) ? (height - width) / 2 : 0).rounded(.down))
+        
+        let cropRect = CGRect(x: origin.x, y: origin.y, width: cropSize, height: cropSize)
+        return image.cropped(to: cropRect)
+    }
+    
+    private func findScalarToResize(from oldSize: CGFloat, to newSize: CGFloat) -> CGFloat {
+        return newSize / oldSize
+    }
+    
+    private func resizeImage(image: CIImage, scalar: CGFloat) -> CIImage? {
+        
+        let resizeFilter = CIFilter(name: "CILanczosScaleTransform")
+        resizeFilter?.setValue(image, forKey: "inputImage")
+        resizeFilter?.setValue(scalar, forKey: "inputScale")
+        return resizeFilter?.outputImage
     }
     
     @IBAction func cancelScanning(_ sender: Any) {
