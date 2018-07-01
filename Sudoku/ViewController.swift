@@ -154,7 +154,7 @@ class ViewController: UIViewController {
         
         let menu = UIAlertController(title: "New Game", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         let easy = UIAlertAction(title: "Easy", style: UIAlertAction.Style.default) { action in
-            print("Easy muthaf***n E")
+            self.game.resetGame()
         }
         let medium = UIAlertAction(title: "Medium", style: UIAlertAction.Style.default) { action in
             print("Medium")
@@ -162,12 +162,11 @@ class ViewController: UIViewController {
         let hard = UIAlertAction(title: "Hard", style: UIAlertAction.Style.default) { action in
             print("Hard")
         }
+        var scan: UIAlertAction?
         if #available(iOS 11, *) {
-            let scan = UIAlertAction(title: "Scan from paper...", style: UIAlertAction.Style.default) { action in
-                
+            scan = UIAlertAction(title: "Scan from paper...", style: UIAlertAction.Style.default) { action in
                 self.performSegue(withIdentifier: "segueToScanner", sender: self)
             }
-            menu.addAction(scan)
         }
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
             print("Cancelled")
@@ -175,6 +174,7 @@ class ViewController: UIViewController {
         menu.addAction(easy)
         menu.addAction(medium)
         menu.addAction(hard)
+        if scan != nil { menu.addAction(scan!) }
         menu.addAction(cancel)
         
         self.present(menu, animated: true)

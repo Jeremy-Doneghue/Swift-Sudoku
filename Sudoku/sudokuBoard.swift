@@ -61,7 +61,7 @@ class sudokuBoard: UIView {
     // 2D Array of Booleans storing which cells in values (above) are read only. true = read only cell.
     var readOnlyCells = [[Bool]](repeating: [Bool](repeating: false, count: 9), count: 9)
     
-    var solvedValues = [[Int]]()
+    var solvedValues: [[Int]]?
     
     // 2D Array of Rectangles for drawing the sudoku grid.
     var innerRectangles = [[CGRect?]](repeating: [CGRect?](repeating: nil, count: 9), count: 9)
@@ -348,7 +348,7 @@ class sudokuBoard: UIView {
     public func resetGame() {
         for c in 0..<Int(sudokuSize) {
             for r in 0..<Int(sudokuSize) {
-                if readOnlyCells[c][r] != true {
+                if readOnlyCells[c][r] != true && values[c][r] != 0 {
                     values[c][r] = 0;
                     boxesFilled -= 1;
                 }
