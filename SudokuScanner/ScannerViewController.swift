@@ -20,7 +20,7 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
     /// - Tag: MLModelSetup
     lazy var classificationRequest: VNCoreMLRequest = {
         do {
-            let model = try VNCoreMLModel(for: my_mnist().model)
+            let model = try VNCoreMLModel(for: ImageClassifier().model)
             
             let request = VNCoreMLRequest(model: model, completionHandler: { [weak self] request, error in
                 self?.processClassifications(for: request, error: error)
@@ -32,11 +32,14 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
         }
     }()
     
+    lazy var textDetectionRequest: VNDetectTextRectanglesRequest = {
+        return VNDetectTextRectanglesRequest(completionHandler: self.handleTextRects)
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         imageView.contentMode = .scaleAspectFit
-        // Do any additional setup after loading the view.
     }
     
     // MARK: - Image Classification
@@ -82,7 +85,7 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
 
         if let ciImage = CIImage(image: image) {
             
-            //let imageOrientation = CGImagePropertyOrientation(image.imageOrientation)
+            let orientation = CGImagePropertyOrientation(image.imageOrientation)
             let detectYaRect = CIDetector(ofType: CIDetectorTypeRectangle, context: ctx, options: nil)
             if let features = detectYaRect?.features(in: ciImage) {
                 
@@ -94,40 +97,118 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
                         else { print("🔴 Perspective correction failed"); return }
                     guard let squareCropped = cropToSquare(image: perspectiveCorrected)
                         else { print("🔴 Cropping to square failed"); return }
-                    guard let inverted = invertImage(image: squareCropped)
-                        else { print("🔴 Image inversion failed"); return }
-                    guard let monochrome = imageToBW(image: inverted)
-                        else { print("🔴 Monochrome filter failed"); return }
-                    guard let contrastBoosted = contrastBoost(image: monochrome)
-                        else { print("🔴 Contrast boost failed"); return }
+
+                    imageView.image = UIImage(ciImage: squareCropped, scale: 1.0, orientation: .up)
+                    let imageRequestHandler = VNImageRequestHandler(ciImage: squareCropped, orientation: CGImagePropertyOrientation(rawValue: 6)!, options: [:])
                     
-                    imageView.image = UIImage(ciImage: contrastBoosted, scale: 1.0, orientation: .up)
+                    self.textDetectionRequest.reportCharacterBoxes = true
+                    self.textDetectionRequest.preferBackgroundProcessing = false
+                    if #available(iOS 12.0, *) {
+                        self.textDetectionRequest.revision = 1
+                    }
                     
-                    // Extract out 81 cells
-                    var cells: [[CIImage?]] = Array(repeating: Array(repeating: nil, count: 9), count: 9)
-                    let cellWidth = contrastBoosted.extent.width / 9.0
-                    let cellHeight = contrastBoosted.extent.height / 9.0
-                    let cropInset = ((cellWidth + cellHeight) / 2.0) * 0.35 // 10% of the average of cell width and height
-                    let croppedCellSize = cellWidth - cropInset
-                    let resizeScalar = findScalarToResize(from: croppedCellSize, to: _MNISTSize)
-                    for col in 0..<9 {
-                        for row in (0..<9).reversed() {
-                            let cell = contrastBoosted.cropped(to: CGRect(x: cellWidth * CGFloat(col) + cropInset,
-                                                                              y: cellHeight * CGFloat(row) + cropInset,
-                                                                              width: cellWidth - cropInset, // Width and height of the patch need to be equal for later on
-                                                                              height: cellWidth - cropInset)).oriented(.right) // Probably need to make this smarter
-                            cells[col][row] = resizeImage(image: cell, scalar: resizeScalar)
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        do {
+                            try imageRequestHandler.perform([self.textDetectionRequest])
+                        } catch let error as NSError {
+                            print("Failed to perform image request: \(error)")
+                            return
                         }
                     }
-                    //print(cells[0][2]?.extent)
+                                                                    
+                                                                    
                     
-                    for col in 0..<9 {
-                        print(classifyInstance(input: cells[1][col]!, orientation: .right))
-                    }
+                    
+                    
+                    
+//                    guard let monochrome = imageToBW(image: squareCropped)
+//                        else { print("🔴 Monochrome filter failed"); return }
+//                    guard let inverted = invertImage(image: monochrome)
+//                        else { print("🔴 Monochrome filter failed"); return }
+//                    guard let contrastBoosted = contrastBoost(image: inverted)
+//                        else { print("🔴 Contrast boost failed"); return }
+//
+//                    imageView.image = UIImage(ciImage: contrastBoosted, scale: 1.0, orientation: .up)
+//
+//                    // Extract out 81 cells
+//                    var cells: [[CIImage?]] = Array(repeating: Array(repeating: nil, count: 9), count: 9)
+//                    let cellWidth = contrastBoosted.extent.width / 9.0
+//                    let cellHeight = contrastBoosted.extent.height / 9.0
+//                    let cropInset = ((cellWidth + cellHeight) / 2.0) * 0.35 // 10% of the average of cell width and height
+//                    let croppedCellSize = cellWidth - cropInset
+//                    let resizeScalar = findScalarToResize(from: croppedCellSize, to: _MNISTSize)
+//                    for col in 0..<9 {
+//                        for row in (0..<9).reversed() {
+//                            let cell = contrastBoosted.cropped(to: CGRect(x: cellWidth * CGFloat(col) + cropInset,
+//                                                                              y: cellHeight * CGFloat(row) + cropInset,
+//                                                                              width: cellWidth - cropInset, // Width and height of the patch need to be equal for later on
+//                                                                              height: cellWidth - cropInset)).oriented(.right) // Probably need to make this smarter
+//                            cells[col][row] = resizeImage(image: cell, scalar: resizeScalar)
+//                        }
+//                    }
+//                    //print(cells[0][2]?.extent)
+//
+//                    for col in 0..<9 {
+//                        print(classifyInstance(input: cells[0][col]!, orientation: .right))
+//                    }
                 }
             }
         }
     }
+    
+    // MARK: Vision completion handlers
+    
+    func processClassifications(for request: VNRequest, error: Error?) {
+        DispatchQueue.main.async {
+            guard let results = request.results else {
+                print("Unable to classify image.\n\(error!.localizedDescription)")
+                return
+            }
+            // The `results` will always be `VNClassificationObservation`s, as specified by the Core ML model in this project.
+            let classifications = results as! [VNClassificationObservation]
+            
+            if classifications.isEmpty {
+                print("Nothing recognized.")
+            } else {
+                // Display top classifications ranked by confidence in the UI.
+                let topClassifications = classifications.prefix(1)
+                let descriptions = topClassifications.map { classification in
+                    // Formats the classification for display; e.g. "(0.37) cliff, drop, drop-off".
+                    return String(format: "  (%.2f) %@", classification.confidence, classification.identifier)
+                }
+                print(descriptions.joined(separator: ", "))
+            }
+        }
+    }
+    
+    func handleTextRects(for request: VNRequest, error: Error?) {
+        
+        if let results = request.results as? [VNTextObservation] {
+            for observation in results {
+                if let boxes: [VNRectangleObservation] = observation.characterBoxes {
+                    for box in boxes {
+                        print(box)
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    private func classifyInstance(input: CIImage, orientation: CGImagePropertyOrientation) {
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let handler = VNImageRequestHandler(ciImage: input, orientation: orientation)
+            do {
+                try handler.perform([self.classificationRequest])
+            } catch {
+                print("Failed to perform classification.\n\(error.localizedDescription)")
+            }
+        }
+        
+    }
+    
+    // MARK: CoreImage transformations
     
     private func imageToBW(image: CIImage) -> CIImage? {
         
@@ -201,40 +282,5 @@ class ScannerViewController: UIViewController, UIImagePickerControllerDelegate, 
         performSegue(withIdentifier: "unwindFromScanner", sender: self)
     }
     
-    private func classifyInstance(input: CIImage, orientation: CGImagePropertyOrientation) {
-        
-        DispatchQueue.global(qos: .userInitiated).async {
-            let handler = VNImageRequestHandler(ciImage: input, orientation: orientation)
-            do {
-                try handler.perform([self.classificationRequest])
-            } catch {
-                print("Failed to perform classification.\n\(error.localizedDescription)")
-            }
-        }
-        
-    }
     
-    func processClassifications(for request: VNRequest, error: Error?) {
-        DispatchQueue.main.async {
-            guard let results = request.results else {
-                print("Unable to classify image.\n\(error!.localizedDescription)")
-                return
-            }
-            // The `results` will always be `VNClassificationObservation`s, as specified by the Core ML model in this project.
-            let classifications = results as! [VNClassificationObservation]
-            
-            if classifications.isEmpty {
-                print("Nothing recognized.")
-            } else {
-                // Display top classifications ranked by confidence in the UI.
-                let topClassifications = classifications.prefix(1)
-                let descriptions = topClassifications.map { classification in
-                    // Formats the classification for display; e.g. "(0.37) cliff, drop, drop-off".
-                    return String(format: "  (%.2f) %@", classification.confidence, classification.identifier)
-                }
-                print(descriptions.joined(separator: ", "))
-            }
-        }
-    }
-
 }
