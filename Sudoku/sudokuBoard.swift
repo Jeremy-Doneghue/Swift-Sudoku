@@ -97,7 +97,7 @@ class sudokuBoard: UIView {
         self.addGestureRecognizer(gesture)
         self.backgroundColor = self.theme.backgroundColor
         
-        parseGame(game: sampleGame)
+        //parseGame(game: sampleGame)
         // Try to parse the game description into the puzzle matrix
 //        do {
 //            values = try SudokuGameParser.parseGame(game: sampleGame, dimension: 9)
@@ -105,7 +105,7 @@ class sudokuBoard: UIView {
 //            return nil
 //        }
         
-        gameReady = true
+        //gameReady = true
     }
     
     // MARK: Drawing
@@ -354,6 +354,14 @@ class sudokuBoard: UIView {
                 }
             }
         }
+        self.setNeedsDisplay()
+    }
+    
+    public func newGame(gameDescription: String) {
+        boxesFilled = 0
+        readOnlyCells = [[Bool]](repeating: [Bool](repeating: false, count: 9), count: 9)
+        parseGame(game: gameDescription)
+        self.gameReady = true
         self.setNeedsDisplay()
     }
     

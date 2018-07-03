@@ -22,6 +22,8 @@ class ViewController: UIViewController {
     var lightsOnGesture: ToggleThemeGesture?
     var lightsOffGesture: ToggleThemeGesture?
     
+    var scanningWasSucessful = "yes"
+    
     var theme = Themes.black {
         didSet {
             updateTheme(to: theme)
@@ -53,6 +55,8 @@ class ViewController: UIViewController {
         let gsdb = GamestateDeliveryBoy()
         game.setGameStateDeliveryBoy(boy: gsdb!)
         keypad.setGameStateDeliveryBoy(boy: gsdb!)
+        
+        game.newGame(gameDescription: game.sampleGame)
 
         self.view.addSubview(timer)
         timer.start()
@@ -154,18 +158,31 @@ class ViewController: UIViewController {
         
         let menu = UIAlertController(title: "New Game", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         let easy = UIAlertAction(title: "Easy", style: UIAlertAction.Style.default) { action in
-            self.game.resetGame()
+            print("Easy-E")
+            let easyGame = "007040283|000570900|021080050|603090700|908305400|000700008|700050030|000167802|160208500"
+            self.game.newGame(gameDescription: easyGame)
+            self.timer.reset()
+            self.timer.start()
         }
         let medium = UIAlertAction(title: "Medium", style: UIAlertAction.Style.default) { action in
             print("Medium")
+            let mediumGame = "098325000|450700008|700410000|980000200|000900410|100050000|000002745|073009600|064070032"
+            self.game.newGame(gameDescription: mediumGame)
+            self.timer.reset()
+            self.timer.start()
         }
         let hard = UIAlertAction(title: "Hard", style: UIAlertAction.Style.default) { action in
             print("Hard")
+            let hardGame = "103092000|205700190|000003000|900000040|030027000|000050207|000280050|000000030|040000976"
+            self.game.newGame(gameDescription: hardGame)
+            self.timer.reset()
+            self.timer.start()
         }
         var scan: UIAlertAction?
         if #available(iOS 11, *) {
             scan = UIAlertAction(title: "Scan from paper...", style: UIAlertAction.Style.default) { action in
                 self.performSegue(withIdentifier: "segueToScanner", sender: self)
+                self.timer.stop()
             }
         }
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) { action in
